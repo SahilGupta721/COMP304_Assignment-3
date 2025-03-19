@@ -18,30 +18,23 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            Sahil_Delannie_COMP304Sec001_Lab03Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+
+            Display_content()
                 }
             }
         }
-    }
-}
+
+
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun Display_content() {
+    Home().DisplayHeader()  // Calling DisplayHeader() from Home class
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun DisplayContentPreview() {
     Sahil_Delannie_COMP304Sec001_Lab03Theme {
-        Greeting("Android")
+        Display_content()
     }
 }
