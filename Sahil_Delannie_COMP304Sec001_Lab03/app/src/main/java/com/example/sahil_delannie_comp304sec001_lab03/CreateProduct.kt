@@ -1,5 +1,6 @@
 package com.example.sahil_delannie_comp304sec001_lab03
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -14,6 +15,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.NavController
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateProduct(navController: NavController, onAddProduct: (Product_data) -> Unit) {
@@ -26,6 +28,11 @@ fun CreateProduct(navController: NavController, onAddProduct: (Product_data) -> 
 
     val categories = listOf("Cell Phone", "Electronics", "Appliances", "Media")
     var expanded by remember { mutableStateOf(false) }
+
+    val isFormValid = id.toIntOrNull()?.let { it in 101..999 } == true &&
+            name.isNotEmpty() &&
+            price.toDoubleOrNull()?.let { it > 0 } == true &&
+            deliveryDate.text.isNotEmpty()
 
     Column(
         modifier = Modifier
@@ -40,11 +47,11 @@ fun CreateProduct(navController: NavController, onAddProduct: (Product_data) -> 
         TextField(
             value = id,
             onValueChange = { newValue ->
-                if (newValue.length <= 3 && newValue.all { it.isDigit() }) {
+                if (newValue.all { it.isDigit() }) {//we have to make sure that user is entering greater that 100
                     id = newValue
                 }
             },
-            label = { Text("ID (101-999)") },
+            label = { Text("ID (101-999) *") },
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth()
         )
@@ -55,7 +62,7 @@ fun CreateProduct(navController: NavController, onAddProduct: (Product_data) -> 
         TextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text("Name") },
+            label = { Text("Name *") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -65,9 +72,9 @@ fun CreateProduct(navController: NavController, onAddProduct: (Product_data) -> 
         TextField(
             value = price,
             onValueChange = {
-                if (it.toDoubleOrNull() != null && it.toDouble() > 0) price = it
+                price = it
             },
-            label = { Text("Price (Positive Only)") },
+            label = { Text("Price (Positive Only) *") },
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth()
         )
@@ -76,18 +83,18 @@ fun CreateProduct(navController: NavController, onAddProduct: (Product_data) -> 
 
         // Date of Delivery
         TextField(
-            value = deliveryDate,
+            value = deliveryDate.text,
             onValueChange = { value ->
                 val dateFormat = DateTimeFormatter.ISO_LOCAL_DATE
                 val parsedDate = try {
-                    LocalDate.parse(value.text, dateFormat)
-                    value
+                    val parsed = LocalDate.parse(value, dateFormat)
+                    if (!parsed.isBefore(LocalDate.now())) TextFieldValue(value) else deliveryDate
                 } catch (e: Exception) {
-                    TextFieldValue(LocalDate.now().toString())
+                    deliveryDate
                 }
                 deliveryDate = parsedDate
             },
-            label = { Text("Date of Delivery (No earlier than today)") },
+            label = { Text("Date of Delivery (No earlier than today) *") },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -102,7 +109,7 @@ fun CreateProduct(navController: NavController, onAddProduct: (Product_data) -> 
                 value = category,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Category") },
+                label = { Text("Category *") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier
                     .menuAnchor()
@@ -136,7 +143,10 @@ fun CreateProduct(navController: NavController, onAddProduct: (Product_data) -> 
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Add Product Button
+        // Debugging Output
+        Text("Form Valid: $isFormValid", fontSize = 18.sp) // Debugging
+
+        // Add Product Button (Disabled if Form is Invalid)
         Button(
             onClick = {
                 val product = Product_data(
@@ -150,7 +160,8 @@ fun CreateProduct(navController: NavController, onAddProduct: (Product_data) -> 
                 onAddProduct(product) // Pass product to Home screen
                 navController.navigate("productList") // Navigate to product list screen
             },
-            modifier = Modifier.padding(top = 16.dp)
+            modifier = Modifier.padding(top = 16.dp),
+            enabled = isFormValid
         ) {
             Text("Add Product")
         }

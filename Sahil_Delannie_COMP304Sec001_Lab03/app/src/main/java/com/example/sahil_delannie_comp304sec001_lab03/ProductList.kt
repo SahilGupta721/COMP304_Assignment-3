@@ -1,6 +1,8 @@
 package com.example.sahil_delannie_comp304sec001_lab03
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -30,55 +32,55 @@ fun ProductList(
                 color = MaterialTheme.colorScheme.primary
             )
         } else {
-            productList.forEach { product ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
-                    Row(
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(productList) { product ->
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(vertical = 8.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
-                        Column(
-                            modifier = Modifier.weight(1f),
-                            verticalArrangement = Arrangement.Center
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = product.name,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                            Text(
-                                text = "Price: \$${"%.2f".format(product.price)}",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Normal
-                            )
-                            Text(
-                                text = "Category: \$${product.category}",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Normal,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
-                        }
-
-                        Row {
-                            // Edit Button
-                            IconButton(onClick = {
-                                navController.navigate("editProduct/${product.id}") // Navigate to Edit screen
-                            }) {
-                                Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Product")
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = product.name,
+                                    fontSize = 20.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+                                Text(
+                                    text = "Price: \$${"%.2f".format(product.price)}",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Normal
+                                )
+                                Text(
+                                    text = "Category: ${product.category}",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
                             }
-                            // Delete Button
-                            IconButton(onClick = {
-                                onDeleteProduct(product.id)
-                            }) {
-                                Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete Product")
+
+                            Row {
+                                IconButton(onClick = {
+                                    navController.navigate("editProduct/${product.id}") // Navigate to Edit screen
+                                }) {
+                                    Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Product")
+                                }
+                                IconButton(onClick = {
+                                    onDeleteProduct(product.id)
+                                }) {
+                                    Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete Product")
+                                }
                             }
                         }
                     }
@@ -88,7 +90,7 @@ fun ProductList(
 
         // Add Product Button
         Button(
-            onClick = { navController.navigate("addProduct") },//once clicked it will creat product epage
+            onClick = { navController.navigate("addProduct") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)
