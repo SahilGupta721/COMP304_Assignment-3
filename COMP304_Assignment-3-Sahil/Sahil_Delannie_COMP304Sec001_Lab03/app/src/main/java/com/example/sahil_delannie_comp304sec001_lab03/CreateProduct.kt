@@ -1,5 +1,6 @@
 package com.example.sahil_delannie_comp304sec001_lab03
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -13,8 +14,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-
 class CreateProduct {
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun AddProduct(
         onAddProduct: (Product_data) -> Unit
@@ -93,6 +94,37 @@ class CreateProduct {
             )
 
             // Category Dropdown
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = it }
+            ) {
+                TextField(
+                    value = category,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Category") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth()
+                        .clickable { expanded = true }
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    categories.forEach { item ->
+                        DropdownMenuItem(
+                            text = { Text(item) },
+                            onClick = {
+                                category = item
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
 
             // Favorite toggle
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -119,6 +151,4 @@ class CreateProduct {
             }
         }
     }
-
 }
-
